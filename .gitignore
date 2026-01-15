@@ -1,45 +1,56 @@
-# Miscellaneous
-*.class
-*.log
-*.pyc
-*.swp
-.DS_Store
-.atom/
-.build/
-.buildlog/
-.history
-.svn/
-.swiftpm/
-migrate_working_dir/
-
-# IntelliJ related
-*.iml
-*.ipr
-*.iws
-.idea/
-
-# The .vscode folder contains launch configuration and tasks you configure in
-# VS Code which you may wish to be included in version control, so this line
-# is commented out by default.
-#.vscode/
-
-# Flutter/Dart/Pub related
-**/doc/api/
-**/ios/Flutter/.last_build_id
-.dart_tool/
-.flutter-plugins-dependencies
-.pub-cache/
-.pub/
+# ----------------------
+# Flutter
+# ----------------------
+# Archivos generados por Flutter
 /build/
-/coverage/
+.flutter-plugins
+.flutter-plugins-dependencies
+.dart_tool/
+.packages
 
-# Symbolication related
-app.*.symbols
+# Configuración local de IDE
+.idea/
+.vscode/
 
-# Obfuscation related
-app.*.map.json
+# Archivos de Android/iOS generados
+*.iml
+*.hprof
+*.log
+*.lock
+*.pyc
+*.class
+*.apk
+*.ipa
 
-# Android Studio will place build artifacts here
-/android/app/debug
-/android/app/profile
-/android/app/release
+# Variables de entorno
+.env
+.env.*
+
+# ----------------------
+# Node.js / Backend
+# ----------------------
+# Dependencias
+node_modules/
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Archivos de lock (opcional: generalmente se suben)
+# package-lock.json
+# yarn.lock
+
+# ----------------------
+# PostgreSQL / Bases de datos
+# ----------------------
+# No se suben dumps locales ni archivos temporales
+*.sql
+*.dump
+pgdata/
+
+# ----------------------
+# General / Sistema
+# ----------------------
+.DS_Store
+Thumbs.db
