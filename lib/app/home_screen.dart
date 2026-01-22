@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../services/wd_service.dart';
 import 'font_style.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -10,22 +11,64 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   bool activeWDay = false;
+  int? workdayId;
+  DateTime? startDate;
+  bool loading = true;
 
-  void DwInit() {
-    setState(() {
-      activeWDay = true;
-    });
-    // guardar fecha de inicio en backend
+  @override
+  void initState() {
+    super.initState();
+    loadCurrentWd();
   }
 
-  void DwEnded() {
-    setState(() {
-      activeWDay = false;
-    });
-    // guardad fecha de cierre en backen
+  Future<void> loadCurrentWd() async {
+    try {
+      final workday = await WorkdayService.getCurrent();
+      if (workday != null) {
+        activeWDay = true;
+        workdayId = workday['id'];
+        startDate = DateTime.parse(workday['start_date']);
+      }
+    } catch (e) {
+      debugPrint(e.toString());
+    } finally {
+      setState(() => loading = false);
+    }
   }
 
-  Future<bool> DwEndConfirm(BuildContext context) async {
+  Future<void> wdStart() async {
+    try {
+      final workday = await WorkdayService.start();
+      setState(() {
+        activeWDay = true;
+        workdayId = workday['id'];
+      });
+    } catch (e) {
+      showError('No se pudo abrir la jornada');
+    }
+  }
+
+  Future<void> wdClose() async {
+    if (workdayId == null) return;
+
+    try {
+      await WorkdayService.close(workdayId!);
+      setState(() {
+        activeWDay = false;
+        workdayId = null;
+      });
+    } catch (e) {
+      showError('No se pudo cerrar la jornada');
+    }
+  }
+
+  void showError(String message) {
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(message)));
+  }
+
+  Future<bool> wdCloseConfirm(BuildContext context) async {
     return await showDialog<bool>(
           context: context,
           barrierDismissible: false,
@@ -52,6 +95,84 @@ class _HomeScreenState extends State<HomeScreen> {
         false;
   }
 
+  Widget wdStatusCard() {
+    return Card(
+      elevation: 4,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Icon(
+                  activeWDay ? Icons.check_circle : Icons.cancel,
+                  color: activeWDay ? Colors.green : Colors.red,
+                  size: 28,
+                ),
+                const SizedBox(width: 8),
+                Text(
+                  activeWDay ? 'Jornada ABIERTA' : 'Jornada CERRADA',
+                  style: const TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+            if (activeWDay && startDate != null)
+              Text(
+                'Iniciada: ${formatDate(startDate!)}',
+                style: const TextStyle(fontSize: 16),
+              )
+            else
+              const Text(
+                'No hay jornada activa',
+                style: TextStyle(fontSize: 16),
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  String formatDate(DateTime date) {
+    return '${date.day.toString().padLeft(2, '0')}/'
+        '${date.month.toString().padLeft(2, '0')}/'
+        '${date.year} '
+        '${date.hour.toString().padLeft(2, '0')}:'
+        '${date.minute.toString().padLeft(2, '0')}';
+  }
+
+  Widget wdActionButton(BuildContext context) {
+    return SizedBox(
+      width: double.infinity,
+      height: 56,
+      child: ElevatedButton(
+        style: ElevatedButton.styleFrom(
+          backgroundColor: activeWDay ? Colors.red : Colors.green,
+        ),
+        onPressed: loading
+            ? null
+            : () async {
+                if (activeWDay) {
+                  final confirm = await wdCloseConfirm(context);
+                  if (!confirm) return;
+                  await wdClose();
+                } else {
+                  await wdStart();
+                }
+              },
+        child: Text(
+          activeWDay ? 'CERRAR JORNADA' : 'INICIAR JORNADA',
+          style: const TextStyle(fontSize: 18, color: Colors.white),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -63,28 +184,8 @@ class _HomeScreenState extends State<HomeScreen> {
         padding: const EdgeInsets.all(16),
         child: Column(
           children: [
-            SizedBox(
-              width: double.infinity,
-              height: 56,
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: activeWDay ? Colors.green : Colors.red,
-                ),
-                onPressed: () async {
-                  if (activeWDay) {
-                    final confirm = await DwEndConfirm(context);
-                    if (!confirm) return;
-                    DwEnded();
-                  } else {
-                    DwInit();
-                  }
-                },
-                child: Text(
-                  activeWDay ? 'Abierto' : 'Cerrado',
-                  style: const TextStyle(fontSize: 18, color: Colors.white),
-                ),
-              ),
-            ),
+            SizedBox(child: wdStatusCard()),
+            SizedBox(child: wdActionButton(context)),
           ],
         ),
       ),
