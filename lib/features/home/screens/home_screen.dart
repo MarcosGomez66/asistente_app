@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../services/wd_service.dart';
-import 'font_style.dart';
+import '../../../core/theme/font_style.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
