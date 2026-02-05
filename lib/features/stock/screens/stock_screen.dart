@@ -1,17 +1,76 @@
+import 'package:caja_inventario/core/theme/font_style.dart';
 import 'package:flutter/material.dart';
+import '../models/product_model.dart';
+import '../services/stock_service.dart';
 
-class StockScreen extends StatelessWidget {
+class StockScreen extends StatefulWidget {
   const StockScreen({super.key});
+
+  @override
+  State<StockScreen> createState() => _StockScreenState();
+}
+
+class _StockScreenState extends State<StockScreen> {
+  late Future<List<ProductModel>> productsFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    productsFuture = StockService.getProducts();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Stock'),),
-      body: Center(
-        child: Text(
-          'Gestion de stock',
-          style: TextStyle(fontSize: 18),
-        ),
+      appBar: AppBar(
+        title: const Text('Productos', style: titleStyle,),
+        backgroundColor: Colors.purple,
+      ),
+      body: FutureBuilder<List<ProductModel>>(
+        future: productsFuture,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
+          }
+          if (snapshot.hasError) {
+            return Center(
+              child: Text('Error: ${snapshot.error}'),
+            );
+          }
+          final products = snapshot.data!;
+          if (products.isEmpty) {
+            return const Center(
+              child: Text('No hay productos cargados'),
+            );
+          }
+          return ListView.separated(
+            padding: const EdgeInsets.all(12),
+            itemCount: products.length,
+            separatorBuilder: (_, __) => const SizedBox(height: 8,),
+            itemBuilder: (context, index) {
+              final product = products[index];
+              final isLowStock = product.stock <= product.minStock;
+              return Card(
+                elevation: 2,
+                child: ListTile(
+                  title: Text(
+                    product.name,
+                    style: const TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  subtitle: Text(
+                    'Gs ${product.salePrice.toStringAsFixed(0)} • Stock: ${product.stock.toStringAsFixed(0)} -${product.description}-',
+                  ),
+                  trailing: isLowStock ? const Icon(Icons.warning) : null,
+                  onTap: () {
+                    //ir a detalles
+                  },
+                ),
+              );
+            },
+          );
+        },
       ),
     );
   }
