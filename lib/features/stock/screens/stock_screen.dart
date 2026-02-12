@@ -1,4 +1,5 @@
 import 'package:caja_inventario/core/theme/font_style.dart';
+import 'package:caja_inventario/features/stock/screens/add_product_screen.dart';
 import 'package:flutter/material.dart';
 import '../models/product_model.dart';
 import '../services/stock_service.dart';
@@ -24,7 +25,7 @@ class _StockScreenState extends State<StockScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Productos', style: titleStyle,),
-        backgroundColor: Colors.purple,
+        backgroundColor: Colors.deepPurple,
       ),
       body: FutureBuilder<List<ProductModel>>(
         future: productsFuture,
@@ -71,6 +72,22 @@ class _StockScreenState extends State<StockScreen> {
             },
           );
         },
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () async {
+          final result = await Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) => const AddProductScreen(),
+            ),
+          );
+          if (result == true) {
+            setState(() {
+              productsFuture = StockService.getProducts();
+            });
+          }
+        },
+        child: Icon(Icons.add),
       ),
     );
   }

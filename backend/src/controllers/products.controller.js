@@ -29,3 +29,63 @@ export const getProducts = async (req, res) => {
         res.status(500).json({ message: 'Error al obtener productos'});
     }
 };
+
+export const createProduct = async (req, res) => {
+    const client = await pool.connect();
+
+    try {
+        const {
+            name,
+            description,
+            salePrice,
+            costPrice,
+            stock,
+            minStock,
+            unit,
+        } = req.body;
+
+        await client.query('BEGIN');
+
+        const productResult = await client.query(
+            `
+            INSERT INTO products
+            (name, description, sale_price, cost_price, stock, min_stock, unit)
+            VALUES ($1,$2,$3,$4,$5,$6,$7)
+            RETURNING *
+            `,
+            [
+                name,
+                description,
+                salePrice,
+                costPrice,
+                stock,
+                minStock,
+                unit
+            ]
+        );
+
+        const product = productResult.rows[0];
+
+        // Si hay stock inicial se crea el movimiento
+        if (stock && stock > 0) {
+            await client.query(
+                `
+                INSERT INTO stock_movements
+                (product_id, quantity, type, reason)
+                VALUES ($1,$2,'IN','Stock inicial')
+                `,
+                [product.id, stock]
+            );
+        }
+
+        await client.query('COMMIT');
+
+        res.status(201).json(product);
+    } catch (error) {
+        await client.query('ROLLBACK');
+        console.error(error);
+        res.status(500).json({ message: 'Error al crear producto'});
+    } finally {
+        client.release();
+    }
+};
