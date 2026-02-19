@@ -1,3 +1,4 @@
+import 'package:caja_inventario/core/theme/font_style.dart';
 import 'package:flutter/material.dart';
 import '../services/stock_service.dart';
 
@@ -34,7 +35,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
           costPrice: double.parse(costPriceController.text),
           stock: double.parse(stockController.text),
           minStock: double.parse(minStockController.text),
-          unit: unit
+          unit: unit,
       );
 
       Navigator.pop(context, true);
@@ -50,7 +51,14 @@ class _AddProductScreenState extends State<AddProductScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Nuevo Producto'),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.white,),
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
+        title: const Text('Nuevo Producto', style: titleStyle,),
+        backgroundColor: Colors.deepPurple,
       ),
       body: Padding(
         padding: const EdgeInsets.all(16),

@@ -1,5 +1,6 @@
 import 'package:caja_inventario/core/theme/font_style.dart';
 import 'package:caja_inventario/features/stock/screens/add_product_screen.dart';
+import 'package:caja_inventario/features/stock/screens/stock_detail_screen.dart';
 import 'package:flutter/material.dart';
 import '../models/product_model.dart';
 import '../services/stock_service.dart';
@@ -26,6 +27,25 @@ class _StockScreenState extends State<StockScreen> {
       appBar: AppBar(
         title: const Text('Productos', style: titleStyle,),
         backgroundColor: Colors.deepPurple,
+        actions: [
+          Padding(
+            padding: const EdgeInsets.only(right: 8.0),
+            child: CircleAvatar(
+              backgroundColor: Colors.white,
+              child: IconButton(
+                icon: const Icon(Icons.add, color: Colors.deepPurple,),
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => const AddProductScreen()
+                    )
+                  );
+                },
+              ),
+            ),
+          )
+        ],
       ),
       body: FutureBuilder<List<ProductModel>>(
         future: productsFuture,
@@ -49,7 +69,7 @@ class _StockScreenState extends State<StockScreen> {
           return ListView.separated(
             padding: const EdgeInsets.all(12),
             itemCount: products.length,
-            separatorBuilder: (_, __) => const SizedBox(height: 8,),
+            separatorBuilder: (_, _) => const SizedBox(height: 8,),
             itemBuilder: (context, index) {
               final product = products[index];
               final isLowStock = product.stock <= product.minStock;
@@ -65,29 +85,17 @@ class _StockScreenState extends State<StockScreen> {
                   ),
                   trailing: isLowStock ? const Icon(Icons.warning) : null,
                   onTap: () {
-                    //ir a detalles
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => ProductDetailScreen(productId: product.id,)
+                      )
+                    );
                   },
                 ),
               );
             },
           );
         },
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () async {
-          final result = await Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (_) => const AddProductScreen(),
-            ),
-          );
-          if (result == true) {
-            setState(() {
-              productsFuture = StockService.getProducts();
-            });
-          }
-        },
-        child: Icon(Icons.add),
       ),
     );
   }

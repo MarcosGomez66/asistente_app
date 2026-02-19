@@ -89,3 +89,61 @@ export const createProduct = async (req, res) => {
         client.release();
     }
 };
+
+export const getProductById = async (req, res) => {
+    const { id } = req.params;
+
+    try {
+        const result = await pool.query(
+            `
+            SELECT
+                id,
+                name,
+                description,
+                sale_price,
+                cost_price,
+                stock,
+                min_stock,
+                unit,
+                is_active,
+                created_at,
+                updated_at
+            FROM products
+            WHERE id = $1
+            `,
+            [id]
+        );
+
+        if (result.rows.length === 0) {
+            return res.status(404).json({
+                message: 'Producto no encontrado'
+            });
+        }
+
+        const row = result.rows[0];
+
+        const product = {
+            id: row.id,
+            name: row.name,
+            description: row.description,
+
+            sale_price: Number(row.sale_price),
+            cost_price: Number(row.cost_price),
+            stock: Number(row.stock),
+            min_stock: Number(row.min_stock),
+
+            unit: row.unit,
+            is_active: row.is_active,
+            created_at: row.created_at,
+            updated_at: row.updated_at
+        };
+
+        res.json(product);
+
+    } catch (error) {
+        console.error('Error getProductById:', error);
+        return res.status(500).json({
+            message: 'Error interno del servidor',
+        });
+    }
+};

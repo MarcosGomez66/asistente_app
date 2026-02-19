@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 class WorkdayService {
-  static const String baseUrl = 'http://192.168.100.84:3000';
+  static const String baseUrl = 'http://192.168.100.83:3000';
 
   static Future<Map<String, dynamic>?> getCurrent() async {
     final response = await http.get(

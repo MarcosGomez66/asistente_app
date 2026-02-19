@@ -1,10 +1,9 @@
 import 'dart:convert';
-import 'dart:math';
 import 'package:http/http.dart' as http;
 import '../models/product_model.dart';
 
 class StockService {
-  static const String baseUrl = 'http://192.168.100.84:3000';
+  static const String baseUrl = 'http://192.168.100.83:3000';
 
   static Future<List<ProductModel>> getProducts() async {
     final response = await http.get(Uri.parse('$baseUrl/products'));
@@ -40,8 +39,26 @@ class StockService {
       }),
     );
 
-    if (response.statusCode != 200) {
-      throw Exception('Error al cargar producto');
+    if (response.statusCode != 201) {
+      throw Exception('Error al crear producto');
+    }
+  }
+
+  static Future<ProductModel> getById(String id) async {
+    final response = await http.get(
+      Uri.parse('$baseUrl/products/$id'),
+      headers: {
+        'Content-type': 'application/json'
+      },
+    );
+
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+      return ProductModel.fromJson(data);
+    } else if (response.statusCode == 404) {
+      throw Exception('Producto no encontrado');
+    } else {
+      throw Exception('Error al obtener producto');
     }
   }
 }
