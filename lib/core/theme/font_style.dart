@@ -5,3 +5,8 @@ const TextStyle titleStyle = TextStyle(
   fontWeight: FontWeight.bold,
   color: Colors.white
 );
+
+const TextStyle cardTitleStyle = TextStyle(
+  fontSize: 22,
+  fontWeight: FontWeight.bold,
+);

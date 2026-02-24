@@ -1,5 +1,6 @@
 import 'package:caja_inventario/core/theme/font_style.dart';
-import 'package:caja_inventario/features/stock/screens/add_product_screen.dart';
+import 'package:caja_inventario/features/stock/screens/adjust_stock_screen.dart';
+import 'package:caja_inventario/features/stock/screens/waste_stock_screen.dart';
 import 'package:caja_inventario/features/stock/services/stock_service.dart';
 import 'package:flutter/material.dart';
 import '../models/product_model.dart';
@@ -45,6 +46,53 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
   }
 
   /// agregar los metodos para ir a las pantallas de ajuste, merma y desactivacion
+  Future<void> _goToAdjustScreen() async {
+    final result = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => AdjustStockScreen()
+      ),
+    );
+    if (result == true) {
+      await fetchProduct();
+    }
+  }
+
+  Future<void> _goToWasteScreen() async {
+    final result = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => WasteStockScreen()
+      ),
+    );
+    if (result == true) {
+      await fetchProduct();
+    }
+  }
+
+  Future<void> _confirmDeactivate() async {
+    final confirm = await showDialog(
+      context: context,
+      builder: (_) => AlertDialog(
+        title: const Text('Confirmar'),
+        content: const Text('Seguro que desea desactivar este producto?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: Text('Cancelar'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: Text('Confirmar'),
+          ),
+        ],
+      )
+    );
+    if (confirm == true) {
+      // await ProductService.deactivate(widget.productId)
+      await fetchProduct();
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -75,8 +123,108 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
           )
         ],
       ),
-      body: Center(
-        child: Text(p.name),
+      body: RefreshIndicator(
+        onRefresh: fetchProduct,
+        child: SingleChildScrollView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            children: [
+              // datos generales
+              Card(
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Text(p.name, style: cardTitleStyle,),
+                      if (p.description != null) ...[
+                        const SizedBox(height: 8,),
+                        Text(p.description!)
+                      ],
+                      const SizedBox(height: 12,),
+                      Text('Precio de venta: \$${p.salePrice}'),
+                      Text('Precio de compra: \$${p.costPrice}'),
+                      Text('Forma de venta: ${p.unit}'),
+                    ],
+                  ),
+                ),
+              ),
+              const SizedBox(height: 8,),
+              // datos de stock
+              Card(
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Text(
+                        'Cantidad actual ${p.stock}',
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          color: p.stock == 0 ? Colors.red : lowStock ? Colors.orange : Colors.green,
+                        ),
+                      ),
+                      const SizedBox(height: 8,),
+                      Text('Cantidad minima: ${p.minStock}')
+                    ],
+                  ),
+                ),
+              ),
+              const SizedBox(height: 8,),
+              // estado
+              Card(
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Text(
+                        p.isActive ? 'Activo' : 'Inactivo',
+                        style: TextStyle(
+                          fontSize: 20,
+                          color: p.isActive ? Colors.green : Colors.red,
+                          fontWeight: FontWeight.bold
+                        ),
+                      ),
+                      const SizedBox(height: 8,),
+                      Text('Creado el: ${p.createdAt}'),
+                      Text('Actualizado el: ${p.updatedAt}')
+                    ],
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16,),
+              // botones
+              if (p.isActive) ...[
+                ElevatedButton.icon(
+                  icon: const Icon(Icons.tune),
+                  label: const Text('Ajustar'),
+                  onPressed: _goToAdjustScreen,
+                ),
+                SizedBox(height: 8,),
+                ElevatedButton.icon(
+                  icon: const Icon(Icons.delete_outline),
+                  label: const Text('Merma'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.orange,
+                  ),
+                  onPressed: p.stock > 0 ? _goToWasteScreen : null,
+                ),
+                SizedBox(height: 8,),
+                ElevatedButton.icon(
+                  icon: const Icon(Icons.block, color: Colors.white,),
+                  label: const Text('Desactivar', style: TextStyle(color: Colors.white),),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.red,
+                  ),
+                  onPressed: _confirmDeactivate,
+                ),
+              ]
+            ],
+          ),
+        ),
       ),
     );
   }
