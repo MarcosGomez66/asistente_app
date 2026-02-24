@@ -71,8 +71,8 @@ export const createProduct = async (req, res) => {
             await client.query(
                 `
                 INSERT INTO stock_movements
-                (product_id, quantity, type, reason)
-                VALUES ($1,$2,'IN','Stock inicial')
+                (product_id, quantity, type, reason, previous_stock, new_stock)
+                VALUES ($1,$2,'IN','Stock inicial', 0.0, $2)
                 `,
                 [product.id, stock]
             );
