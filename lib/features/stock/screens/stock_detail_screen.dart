@@ -1,6 +1,6 @@
 import 'package:caja_inventario/core/theme/font_style.dart';
-import 'package:caja_inventario/features/stock/screens/adjust_stock_screen.dart';
-import 'package:caja_inventario/features/stock/screens/waste_stock_screen.dart';
+import 'package:caja_inventario/features/movements/screens/adjust_stock_screen.dart';
+import 'package:caja_inventario/features/movements/screens/waste_stock_screen.dart';
 import 'package:caja_inventario/features/stock/services/stock_service.dart';
 import 'package:flutter/material.dart';
 import '../models/product_model.dart';
@@ -50,7 +50,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
     final result = await Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (_) => AdjustStockScreen()
+        builder: (_) => AdjustStockScreen(product: product!,)
       ),
     );
     if (result == true) {

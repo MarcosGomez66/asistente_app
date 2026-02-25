@@ -1,7 +1,7 @@
 import 'package:caja_inventario/core/theme/font_style.dart';
 import 'package:flutter/material.dart';
-import '../models/product_model.dart';
-import '../services/stock_service.dart';
+import '../../stock/models/product_model.dart';
+import '../../stock/services/stock_service.dart';
 
 class WasteStockScreen extends StatefulWidget {
   const WasteStockScreen({super.key});
