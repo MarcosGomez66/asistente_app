@@ -62,7 +62,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
     final result = await Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (_) => WasteStockScreen()
+        builder: (_) => WasteStockScreen(product: product!,)
       ),
     );
     if (result == true) {

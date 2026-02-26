@@ -34,14 +34,14 @@ class _AdjustStockScreenState extends State<AdjustStockScreen> {
       await MovementsService.adjustStock(
         widget.product.id,
         newStock,
-        _reasonController.text
+        _reasonController.text,
       );
-      
+
       Navigator.pop(context, true);
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Error al ajustar stock'))
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Error al ajustar stock')));
     } finally {
       setState(() => isLoading = false);
     }
@@ -54,7 +54,7 @@ class _AdjustStockScreenState extends State<AdjustStockScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Ajuste de stock', style: titleStyle,),
+        title: const Text('Ajuste de stock', style: titleStyle),
         backgroundColor: Colors.deepPurple,
       ),
       body: Padding(
@@ -65,11 +65,17 @@ class _AdjustStockScreenState extends State<AdjustStockScreen> {
             children: [
               Text(
                 product.name,
-                style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 18,
+                ),
               ),
-              const SizedBox(height: 12,),
-              Text('Stock actual: ${product.stock}', style: TextStyle(fontSize: 16),),
-              const SizedBox(height: 20,),
+              const SizedBox(height: 12),
+              Text(
+                'Stock actual: ${product.stock}',
+                style: TextStyle(fontSize: 16),
+              ),
+              const SizedBox(height: 20),
               TextFormField(
                 controller: _stockController,
                 keyboardType: TextInputType.number,
@@ -90,7 +96,7 @@ class _AdjustStockScreenState extends State<AdjustStockScreen> {
                   return null;
                 },
               ),
-              const SizedBox(height: 16,),
+              const SizedBox(height: 16),
               TextFormField(
                 controller: _reasonController,
                 decoration: const InputDecoration(
@@ -98,14 +104,16 @@ class _AdjustStockScreenState extends State<AdjustStockScreen> {
                   border: OutlineInputBorder(),
                 ),
               ),
-              const SizedBox(height: 24,),
+              const SizedBox(height: 24),
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
-                  onPressed: isLoading? null : _submit,
-                  child: isLoading ? const CircularProgressIndicator() : const Text('Confirmar ajuste'),
+                  onPressed: isLoading ? null : _submit,
+                  child: isLoading
+                      ? const CircularProgressIndicator()
+                      : const Text('Confirmar ajuste'),
                 ),
-              )
+              ),
             ],
           ),
         ),
