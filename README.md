@@ -1,16 +1,43 @@
-# caja_inventario
+# Asistente de ventas App
 
-App para controlar movimientos de compra, venta e inventario
+Aplicación móvil para gestionar ventas, productos e inventario, pensada para pequeños negocios y emprendedores.  
+Permite registrar productos, gestionar stock, y llevar un registro de ventas durante una jornada de trabajo.
 
-## Getting Started
+## Caracteristicas
 
-This project is a starting point for a Flutter application.
+- 📦 Gestión de productos
+- 📊 Control de stock
+- 💰 Registro de ventas
+- 🔄 Movimientos de inventario
+- 🗓️ Manejo de jornadas de trabajo
 
-A few resources to get you started if this is your first Flutter project:
+## Tecnologías
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+### Frontend
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+- Flutter
+
+### Backend
+
+- Node.js
+- Express
+
+### Base de datos
+
+- PosgreSQL
+
+## Estado del proyecto
+
+🚧 En desarrollo  
+Actualmente el proyecto se enfoca primero en construir una base sólida de registro de datos (productos, ventas, movimientos, jornadas), con una UI aimigable con el usuario.
+
+## Objetivos del proyecto
+
+El objetivo a largo plazo de esta aplicación es no solo registras ventas y movimientos de inventario, sino también ofrecer analisis de datos sobre la actividad del negocio como:
+
+- Análisis descriptivos de ventas
+- Identificación de productos más vendidos
+- tendencias de consumo
+- Posibles proyecciones o análisis predictivo
+
+El proyecto planea contar con un versión desplegada públicamente.
